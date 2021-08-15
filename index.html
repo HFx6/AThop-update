@@ -1,0 +1,95 @@
+<html>
+<head>
+  <title>AT Bus Map</title>
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.3.1/dist/leaflet.css">
+  <link rel="stylesheet" href="css/css.css"/>
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css">
+  <link href="https://use.fontawesome.com/releases/v5.0.6/css/all.css" rel="stylesheet">
+  <link rel="shortcut icon" href="https://az609578.vo.msecnd.net/public/a304fb7/images/at-logo-144.png">
+  <link rel="stylesheet" href="EA/easy-autocomplete.min.css">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+</head>
+<body>
+  <nav class="navbar navbar-static-top dash-navbar-top dnl-visible">
+    <div class="container-fluid">
+      <div class="navbar-header">
+        <button class="dnl-btn-toggle">
+          <span class="fa fa-bars"></span>
+        </button>
+        <a class="navbar-brand" href="#" style="margin-right: 0; padding-right: 10px;">
+          <img src="https://az609578.vo.msecnd.net/public/a304fb7/images/logo-55.png" width="25" height="25" alt="">
+        </a>
+        <a class="navbar-brand" onClick="window.location.reload();" href="#" style="margin:  0; padding: 0;">AT Bus Map <span>v0.1.2</span></a>
+        <div class="btn-group btn-group-toggle buttontoggle" id="buttonToggleSelec" data-toggle="buttons">
+          <label class="btn btn-secondary" id="btcol">
+            <input type="radio" name="options" id="stop"  autocomplete="off"> <i class="fas fa-map-marker-alt"></i>
+          </label>
+          <label class="btn btn-secondary" id="btcol">
+            <input type="radio" name="options" id="bus" autocomplete="off"> <i class="fas fa-bus"></i>
+          </label>
+          <label class="btn btn-secondary" id="btcol">
+            <input type="radio" name="options" id="zone" autocomplete="off"> <i class="fas fa-map"></i>
+          </label>
+          <label class="btn btn-secondary" id="btcol">
+            <input type="radio" name="options" id="clear" autocomplete="off"> <i class="fas fa-eraser"></i>
+          </label>
+        </div>
+      </div>
+    </div>
+  </nav>
+  <div class="dash-navbar-left dnl-visible">
+     <div id="formroute">
+      <p style="text-align: center; font-weight: bold; font-size: 25px; margin-top: 1rem;">Find Your Route</p>
+      <form style="width: 250px; margin:  0 auto;" action="trip.php" id="searchForm">
+        <div class="form-group">
+          <div class="input-group mb-3">
+            <div class="input-group-prepend">
+              <button class="btn btn-primary bluebutton" type="button" onclick="getLocation()"><i class="fas fa-map-marker-alt"></i></button>
+            </div>
+            <input type="text" class="form-control" id="fromloc" name="fromloc" placeholder="Where are you . . ." required>
+            <input type="hidden" id="fromlat" name="fromlat">
+            <input type="hidden" id="fromlon" name="fromlon">
+          </div>
+        </div>
+        <div class="form-group">
+          <input type="text" class="form-control" id="toloc" name="toloc" placeholder="Where are you going . . ." required>
+          <input type="hidden" id="tolat" name="tolat">
+          <input type="hidden" id="tolon" name="tolon">
+        </div>
+        <hr />
+        <div class="form-group">
+        <select id="inputState" class="form-control bluebutton" name="mode">
+          <option selected value="A">Leave After</option>
+          <option value="B">Arrive Before</option>
+        </select>
+      </div>
+        <div class="form-group">
+          <input type="text" class="form-control" id="thtotfh" onChange="timconv(this)" placeholder="Time . . ." required>
+          <input type="hidden" class="form-control" id="tfht" name="time">
+        </div>
+        <select id="datechoice" class="form-control bluebutton" name="date">
+        </select>
+        <hr />
+        <button type="submit" class="btn btn-dark" style="width: 100%;">Search <i class="fas fa-location-arrow"></i></button>
+      </form>
+      <span style="font-size: 0.6rem;">Copyright &copy; 2018 Auckland Transport.</span>
+    </div>
+  </div>
+  <div class="content-wrap dnl-visible content-opacity" data-effect="dnl-overlay">
+    <div class="container-fluid maincont">
+      <div id="mapid"></div>
+    </div>
+  </div>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.js" crossorigin=""></script>
+  <script src="https://unpkg.com/leaflet@1.3.1/dist/leaflet.js" crossorigin=""></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js" crossorigin=""></script>
+  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js"></script>
+  <script src="EA/jquery.easy-autocomplete.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.20.1/moment.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-timepicker/0.5.2/js/bootstrap-timepicker.js"></script>
+  <script src="js/main.js"></script>
+  <script>
+  function backFormClone(){clearAM(),$("#formroute").replaceWith(fromClone)}function getLocation(){navigator.geolocation?navigator.geolocation.getCurrentPosition(showPosition):alert("Geolocation Error")}function showPosition(e){$.get("https://api.at.govt.nz/v2/public-restricted/geocode/reverse?lat="+e.coords.latitude+"&lng="+e.coords.longitude+"&subscription-key=323741614c1c4b9083299adefe100aa6",function(e,t){document.getElementById("fromloc").value=e.response.addresses[0].address,document.getElementById("fromlat").value=e.response.addresses[0].lat,document.getElementById("fromlon").value=e.response.addresses[0].lng})}$("#searchForm").submit(function(e){fromClone=$("#formroute").clone(!0,!0),$("#formroute").html("<style>centerMe{position:absolute;top:50%;left:50%;-webkit-transform:translate(-50%,-50%);transform:translate(-50%,-50%)}.loading{position:absolute;top:50%;left:50%;-webkit-transform:translateY(-50%);transform:translateY(-50%);height:25px;width:10px;border-radius:10%;background:#2c3e50;border-top-color:#2980b9;-webkit-animation:fade2 1s infinite;animation:fade2 1s infinite;-webkit-transition:background .2s;transition:background .2s}.loading:after,.loading:before{content:'';position:absolute;display:block;height:20px;width:10px;background:#2c3e50;top:50%;-webkit-transform:translateY(-50%);transform:translateY(-50%);left:-15px;border-radius:10%;-webkit-animation:fade1 1s infinite;animation:fade1 1s infinite;-webkit-transition:background .2s;transition:background .2s}.loading:before{left:15px;-webkit-animation:fade3 1s infinite;animation:fade3 1s infinite}@-webkit-keyframes fade1{0%{background:#2980b9}}@keyframes fade1{0%{background:#2980b9}}@-webkit-keyframes fade2{33%{background:#2980b9}}@keyframes fade2{33%{background:#2980b9}}@-webkit-keyframes fade3{66%{background:#2980b9}}@keyframes fade3{66%{background:#2980b9}}</style><div class='loading'></div>"),e.preventDefault();var t=$(this),o=t.find('input[name="fromloc"]').val(),a=t.find('input[name="fromlat"]').val(),n=t.find('input[name="fromlon"]').val(),r=t.find('input[name="toloc"]').val(),i=t.find('input[name="tolat"]').val(),s=t.find('input[name="tolon"]').val(),m=t.find('select[name="mode"]').val(),l=t.find('select[name="date"]').val(),c=t.find('input[name="time"]').val(),d=t.attr("action");$.get(d,{fromloc:o,fromlat:a,fromlon:n,toloc:r,tolat:i,tolon:s,mode:m,date:l,time:c}).done(function(e){$("#formroute").html(e)})});var fromloc={url:function(e){return"https://api.at.govt.nz/v2/public-restricted/geocode/forward?query="+e+"&subscription-key=323741614c1c4b9083299adefe100aa6"},listLocation:function(e){return e.response.addresses},getValue:"address",requestDelay:300,list:{onSelectItemEvent:function(){var e=$("#fromloc").getSelectedItemData().lat;$("#fromlat").val(e).trigger("change");var t=$("#fromloc").getSelectedItemData().lng;$("#fromlon").val(t).trigger("change")}}};$("#fromloc").easyAutocomplete(fromloc);var toloc={url:function(e){return"https://api.at.govt.nz/v2/public-restricted/geocode/forward?query="+e+"&subscription-key=323741614c1c4b9083299adefe100aa6"},listLocation:function(e){return e.response.addresses},getValue:"address",requestDelay:300,list:{onSelectItemEvent:function(){var e=$("#toloc").getSelectedItemData().lat;$("#tolat").val(e).trigger("change");var t=$("#toloc").getSelectedItemData().lng;$("#tolon").val(t).trigger("change")}}};function timconv(e){convtime=moment(e.value,"h:mm A").format("HH:mm"),document.getElementById("tfht").value=convtime}function formatDate(e){var t=new Date(e),o=""+(t.getMonth()+1),a=""+t.getDate(),n=t.getFullYear();return o.length<2&&(o="0"+o),a.length<2&&(a="0"+a),[n,o,a].join("-")}$("#toloc").easyAutocomplete(toloc),$("#thtotfh").timepicker({template:!1,showInputs:!1,minuteStep:5});for(var curr=new Date,first=curr.getDate(),firstday=new Date(curr.setDate(first)).toString(),options="",i=0;i<20;i++){var next=new Date(curr.getTime());next.setDate(first+i),options+="<option value="+formatDate(next.toString())+">"+formatDate(next.toString())+"</option>"}$("#datechoice").append(options);var mymap=L.map("mapid").setView([-36.98071167,174.77302333],10);L.tileLayer("https://api.mapbox.com/styles/v1/mapbox/dark-v9/tiles/256/{z}/{x}/{y}?access_token=pk.eyJ1IjoibWFwYm94IiwiYSI6ImNpejY4NXVycTA2emYycXBndHRqcmZ3N3gifQ.rJcFIG214AriISLbB6B5aw",{maxZoom:18,attribution:'<a href="http://openstreetmap.org">OpenStreetMap</a> | <a href="http://mapbox.com">Mapbox</a>'}).addTo(mymap),mymap.options.maxZoom=17,mymap.options.minZoom=10,mymap.setMaxBounds(L.latLngBounds(L.latLng(-36.26642133143938,175.4338073730469),L.latLng(-37.377796572371174,174.0673828125)));var get_stops=L.geoJson(null),get_bus=L.geoJson(null);function onDragEndBL(){get_bus.clearLayers(),$.ajax({type:"GET",url:"bus_loc.php?lat="+mymap.getBounds().getCenter().lat+"&lon="+mymap.getBounds().getCenter().lng,dataType:"json",success:function(e){(get_bus=L.geoJson(e,{onEachFeature:function(e,t){t.bindPopup(e.properties.name)}})).addTo(mymap)}})}function onDragEndBS(){get_stops.clearLayers(),$.ajax({type:"GET",url:"get_stops.php?lat="+mymap.getBounds().getCenter().lat+"&lon="+mymap.getBounds().getCenter().lng,dataType:"json",success:function(e){(get_stops=L.geoJson(e,{onEachFeature:function(e,t){t.bindPopup(e.properties.name)}})).addTo(mymap)}})}function clearAM(){mymap.eachLayer(function(e){e instanceof L.TileLayer||mymap.removeLayer(e)})}$("#buttonToggleSelec :input").change(function(){"stop"==this.id?(console.log(this.id),mymap.on("zoomend",function(){console.log(mymap.getZoom()),mymap.getZoom()<16?(get_stops.clearLayers(),mymap.off("dragend",onDragEndBS)):mymap.on("dragend",onDragEndBS)})):"clear"==this.id?(console.log(this.id),clearAM(),mymap.off("dragend",onDragEndBS),mymap.off("dragend",onDragEndBL)):"bus"==this.id&&mymap.on("zoomend",function(){console.log(mymap.getZoom()),mymap.getZoom()<14?(get_bus.clearLayers(),mymap.off("dragend",onDragEndBL)):mymap.on("dragend",onDragEndBL)})});
+  </script>
+</body>
+</html>
