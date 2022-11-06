@@ -10,7 +10,7 @@ if(!$isAjax) {
 $lat = $_GET['lat'];
 $lon = $_GET['lon'];
 // Connecting, selecting database
-$dbconn = pg_connect("dbname='d2d7ort0rjsd53' user='gjwpjhqfquizib' host='ec2-54-243-59-122.compute-1.amazonaws.com' password='542d82a2506553281fb8741070fe2e0d4ca16b11bc824bca81feaa3aac8d6f6a'")
+$dbconn = pg_connect("")
     or die('Could not connect: ' . pg_last_error());
 
 // Performing SQL query
